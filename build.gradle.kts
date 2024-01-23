@@ -25,6 +25,7 @@ dependencies {
 	implementation("org.flywaydb:flyway-core")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 	runtimeOnly("org.postgresql:postgresql")
 	implementation ("io.jsonwebtoken:jjwt-api:0.12.3")
 	runtimeOnly ("io.jsonwebtoken:jjwt-impl:0.12.3")

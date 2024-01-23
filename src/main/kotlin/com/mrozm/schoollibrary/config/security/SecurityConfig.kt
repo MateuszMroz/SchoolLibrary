@@ -22,8 +22,11 @@ class SecurityConfig(
         http
                 .csrf { it.disable() }
                 .authorizeHttpRequests {
-                    it.requestMatchers(PATTERN_TO_NOT_AUTHENTICATE)
-                            .permitAll()
+                    it.requestMatchers(
+                            AUTHENTICATION,
+                            SWAGGER,
+                            API_DOCS
+                    ).permitAll()
                     it.anyRequest().authenticated()
                 }
                 .sessionManagement {
@@ -36,6 +39,8 @@ class SecurityConfig(
     }
 
     private companion object {
-        const val PATTERN_TO_NOT_AUTHENTICATE = "/api/v1/auth/**"
+        const val AUTHENTICATION = "/api/v1/auth/**"
+        const val SWAGGER = "/swagger-ui/**"
+        const val API_DOCS = "/v3/api-docs/**"
     }
 }
