@@ -26,9 +26,13 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3")
 	runtimeOnly("org.postgresql:postgresql")
+	implementation ("io.jsonwebtoken:jjwt-api:0.12.3")
+	runtimeOnly ("io.jsonwebtoken:jjwt-impl:0.12.3")
+	runtimeOnly ("io.jsonwebtoken:jjwt-jackson:0.12.3")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3")
 	testImplementation("org.springframework.security:spring-security-test")
+	testRuntimeOnly("com.h2database:h2")
 }
 
 tasks.withType<KotlinCompile> {
