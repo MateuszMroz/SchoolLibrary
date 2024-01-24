@@ -12,18 +12,18 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_T
 @MybatisTest
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 class AuthRepositoryTests @Autowired constructor(
-        private val authRepository: AuthRepository
+    private val authRepository: AuthRepository
 ) {
 
     @Test
     fun `should return rows affected when save student to database`() {
         // given
         val student = Student(
-                firstname = "Anne",
-                lastname = "Cleveland",
-                email = "jewel.martin@example.com",
-                pass = "partiendo",
-                role = USER
+            firstname = "Anne",
+            lastname = "Cleveland",
+            email = "jewel.martin@example.com",
+            pass = "partiendo",
+            role = USER
         )
 
         // when
@@ -37,11 +37,11 @@ class AuthRepositoryTests @Autowired constructor(
     fun `should find student when save to database`() {
         // given
         val student = Student(
-                firstname = "Anne",
-                lastname = "Cleveland",
-                email = "jewel.martin@example.com",
-                pass = "partiendo",
-                role = USER
+            firstname = "Anne",
+            lastname = "Cleveland",
+            email = "jewel.martin@example.com",
+            pass = "partiendo",
+            role = USER
         )
 
         // when

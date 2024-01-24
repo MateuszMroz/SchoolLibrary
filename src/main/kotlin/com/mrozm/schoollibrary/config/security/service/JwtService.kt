@@ -29,20 +29,22 @@ class JwtService : IJwtGenerator, IJwtValidator, IJwtExtractor {
 
     override fun generateToken(extraClaims: Map<String, Any>, userDetails: UserDetails): String {
         return Jwts
-                .builder()
-                .claims()
-                .empty()
-                .add(extraClaims)
-                .and()
-                .subject(userDetails.username)
-                .issuedAt(Date(System.currentTimeMillis()))
-                .expiration(Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(getSignInKey())
-                .compact()
+            .builder()
+            .claims()
+            .empty()
+            .add(extraClaims)
+            .and()
+            .subject(userDetails.username)
+            .issuedAt(Date(System.currentTimeMillis()))
+            .expiration(Date(System.currentTimeMillis() + EXPIRATION_TIME))
+            .signWith(getSignInKey())
+            .compact()
     }
 
-    override fun isTokenValid(token: String, userDetails: UserDetails): Boolean =
-            extractClaim(token, Claims::getExpiration).before(Date())
+    override fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
+        val username = extractEmail(token)
+        return username == userDetails.username && !extractClaim(token, Claims::getExpiration).before(Date())
+    }
 
     override fun extractEmail(token: String): String? = extractClaim(token, Claims::getSubject)
 
@@ -53,17 +55,17 @@ class JwtService : IJwtGenerator, IJwtValidator, IJwtExtractor {
 
     private fun extractAllClaims(token: String): Claims {
         return Jwts
-                .parser()
-                .verifyWith(getSignInKey())
-                .build()
-                .parseSignedClaims(token)
-                .payload
+            .parser()
+            .verifyWith(getSignInKey())
+            .build()
+            .parseSignedClaims(token)
+            .payload
     }
 
     private fun getSignInKey(): SecretKey = Keys.hmacShaKeyFor(BASE64.decode(SECRET_KEY))
 
     private companion object {
-        const val EXPIRATION_TIME = 1000 * 120 // 2min
+        const val EXPIRATION_TIME = 1000 * 300 // 5min
         const val SECRET_KEY = "642e57625d704d7d4e28754e7d6e6974583034252f4c6f56512e536550"
     }
 

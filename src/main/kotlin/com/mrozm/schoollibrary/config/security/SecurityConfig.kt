@@ -13,27 +13,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-        private val jwtAuthFilter: JwtAuthFilter,
-        private val authenticationProvider: AuthenticationProvider
+    private val jwtAuthFilter: JwtAuthFilter,
+    private val authenticationProvider: AuthenticationProvider
 ) {
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-                .csrf { it.disable() }
-                .authorizeHttpRequests {
-                    it.requestMatchers(
-                            AUTHENTICATION,
-                            SWAGGER,
-                            API_DOCS
-                    ).permitAll()
-                    it.anyRequest().authenticated()
-                }
-                .sessionManagement {
-                    it.sessionCreationPolicy(STATELESS)
-                }
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .csrf { it.disable() }
+            .authorizeHttpRequests {
+                it.requestMatchers(AUTHENTICATION, SWAGGER, API_DOCS).permitAll()
+                it.anyRequest().authenticated()
+            }
+            .sessionManagement {
+                it.sessionCreationPolicy(STATELESS)
+            }
+            .authenticationProvider(authenticationProvider)
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }

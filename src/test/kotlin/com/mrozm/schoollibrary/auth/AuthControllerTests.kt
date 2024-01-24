@@ -3,7 +3,11 @@ package com.mrozm.schoollibrary.auth
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mrozm.schoollibrary.auth.model.dto.LoginRequest
 import com.mrozm.schoollibrary.auth.model.dto.RegisterRequest
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.TestInstance.Lifecycle.PER_METHOD
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mybatis.spring.boot.test.autoconfigure.AutoConfigureMybatis
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,136 +26,150 @@ import org.springframework.test.web.servlet.post
 @AutoConfigureMockMvc
 @AutoConfigureMybatis
 class AuthControllerTests @Autowired constructor(
-        private val mockMvc: MockMvc,
-        private val service: IAuthService
+    private val mockMvc: MockMvc,
+    private val service: IAuthService
 ) {
 
     private val objectMapper: ObjectMapper = ObjectMapper()
 
     private val registerRequest = RegisterRequest(
-            firstname = "Serena",
-            lastname = "Whitley",
-            email = "faith.vargas@example.com",
-            password = "conclusionemque"
+        firstname = "Serena",
+        lastname = "Whitley",
+        email = "faith.vargas@example.com",
+        password = "conclusionemque"
     )
 
     private val loginRequest = LoginRequest(
-            email = "faith.vargas@example.com",
-            password = "conclusionemque"
+        email = "faith.vargas@example.com",
+        password = "conclusionemque"
     )
 
-    @Test
-    fun `should return OK when user register successfully`() {
-        // given/when
-        val performPost = mockMvc.post("$BASE_URL/register") {
-            contentType = APPLICATION_JSON
-            content = objectMapper.writeValueAsString(registerRequest)
-        }
+    @Nested
+    @DisplayName("Register")
+    @TestInstance(PER_METHOD)
+    inner class Register {
+        @Test
+        fun `should return OK when user register successfully`() {
+            // given/when
+            val performPost = mockMvc.post("$BASE_URL/register") {
+                contentType = APPLICATION_JSON
+                content = objectMapper.writeValueAsString(registerRequest)
+            }
 
-        // then
-        performPost
+            // then
+            performPost
                 .andDo { print() }
                 .andExpect { status { isOk() } }
-    }
-
-    @Test
-    fun `should return Bearer token when user register successfully`() {
-        // given/when
-        val performPost = mockMvc.post("$BASE_URL/register") {
-            contentType = APPLICATION_JSON
-            content = objectMapper.writeValueAsString(registerRequest)
         }
 
-        // then
-        performPost
+        @Test
+        fun `should return Bearer token when user register successfully`() {
+            // given/when
+            val performPost = mockMvc.post("$BASE_URL/register") {
+                contentType = APPLICATION_JSON
+                content = objectMapper.writeValueAsString(registerRequest)
+            }
+
+            // then
+            performPost
                 .andDo { print() }
                 .andExpect {
                     status { isOk() }
                     jsonPath("$.token") { isString() }
                 }
-    }
+        }
 
-    @Test
-    fun `should return BAD_REQUEST when user try register with wrong data`() {
-        // given
-        val request = RegisterRequest(
+        @Test
+        fun `should return BAD_REQUEST when user try register with wrong data`() {
+            // given
+            val request = RegisterRequest(
                 firstname = "",
                 lastname = "",
                 email = "faith.vargas@example.com",
                 password = ""
-        )
+            )
 
-        // when
-        val performPost = mockMvc.post("$BASE_URL/register") {
-            contentType = APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
-        }
+            // when
+            val performPost = mockMvc.post("$BASE_URL/register") {
+                contentType = APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
 
-        // then
-        performPost
+            // then
+            performPost
                 .andDo { print() }
                 .andExpect {
                     status { isBadRequest() }
                 }
-    }
-
-    @Test
-    fun `should return OK when user log in successfully`() {
-        // given
-        service.register(registerRequest)
-
-        // when
-        val performPost = mockMvc.post("$BASE_URL/login") {
-            contentType = APPLICATION_JSON
-            content = objectMapper.writeValueAsString(loginRequest)
         }
 
-        // then
-        performPost
+    }
+
+    @Nested
+    @DisplayName("Login")
+    @TestInstance(PER_METHOD)
+    inner class Login {
+
+
+        @Test
+        fun `should return OK when user log in successfully`() {
+            // given
+            service.register(registerRequest)
+
+            // when
+            val performPost = mockMvc.post("$BASE_URL/login") {
+                contentType = APPLICATION_JSON
+                content = objectMapper.writeValueAsString(loginRequest)
+            }
+
+            // then
+            performPost
                 .andDo { print() }
                 .andExpect { status { isOk() } }
-    }
-
-    @Test
-    fun `should return Bearer token when user log in successfully`() {
-        // given
-        service.register(registerRequest)
-
-        // when
-        val performPost = mockMvc.post("$BASE_URL/login") {
-            contentType = APPLICATION_JSON
-            content = objectMapper.writeValueAsString(loginRequest)
         }
 
-        // then
-        performPost
+        @Test
+        fun `should return Bearer token when user log in successfully`() {
+            // given
+            service.register(registerRequest)
+
+            // when
+            val performPost = mockMvc.post("$BASE_URL/login") {
+                contentType = APPLICATION_JSON
+                content = objectMapper.writeValueAsString(loginRequest)
+            }
+
+            // then
+            performPost
                 .andDo { print() }
                 .andExpect {
                     status { isOk() }
                     jsonPath("$.token") { isString() }
                 }
-    }
-
-    @Test
-    fun `should return BAD_REQUEST when user try log in with wrong data`() {
-        // given
-        val request = LoginRequest(
-                email = "",
-                password = "conclusionemque"
-        )
-
-        // when
-        val performPost = mockMvc.post("$BASE_URL/login") {
-            contentType = APPLICATION_JSON
-            content = objectMapper.writeValueAsString(request)
         }
 
-        // then
-        performPost
+        @Test
+        fun `should return BAD_REQUEST when user try log in with wrong data`() {
+            // given
+            val request = LoginRequest(
+                email = "",
+                password = "conclusionemque"
+            )
+
+            // when
+            val performPost = mockMvc.post("$BASE_URL/login") {
+                contentType = APPLICATION_JSON
+                content = objectMapper.writeValueAsString(request)
+            }
+
+            // then
+            performPost
                 .andDo { print() }
                 .andExpect {
                     status { isBadRequest() }
                 }
+        }
+
     }
 
     private companion object {

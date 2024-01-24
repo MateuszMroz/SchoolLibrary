@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+        'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+
+<mapper namespace="com.mrozm.schoollibrary.process.book.BookRepository">
+
+    <resultMap id="books" type="com.mrozm.schoollibrary.process.book.model.entity.BookEntity">
+        <result column="isbn"/>
+        <result column="title"/>
+        <result column="author"/>
+        <result column="category"/>
+        <result column="format"/>
+        <result column="release"/>
+    </resultMap>
+
+    <insert id="save">
+        INSERT INTO book (isbn, title, author, category, format, release)
+        VALUES (#{isbn}, #{title}, #{author}, #{category}, #{format}, #{release})
+    </insert>
+
+    <select id="findByIsbn" parameterType="string"
+            resultType="com.mrozm.schoollibrary.process.book.model.entity.BookEntity">
+        SELECT isbn, title, author, category, format, release
+        FROM book
+        WHERE isbn = #{isbn}
+    </select>
+
+    <select id="findAll" resultMap="books">
+        SELECT isbn, title, author, category, format, release
+        FROM book
+    </select>
+
+    <update id="update" parameterType="map">
+        UPDATE book
+        SET title    = #{book.title},
+            author   = #{book.author},
+            category = #{book.category},
+            format   = #{book.format},
+            release  = #{book.release}
+        WHERE isbn = #{isbn}
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM book
+        WHERE isbn = #{isbn}
+    </delete>
+
+</mapper>
