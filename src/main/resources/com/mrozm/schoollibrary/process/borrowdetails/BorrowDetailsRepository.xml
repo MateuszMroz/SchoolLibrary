@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+        'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+
+<mapper namespace="com.mrozm.schoollibrary.process.borrowdetails.BorrowDetailsRepository">
+
+    <insert id="borrowBook">
+        INSERT INTO borrow (student_id, book_isbn, borrow_date, return_date, status)
+        VALUES (#{studentId}, #{bookIsbn}, #{borrowDate}, #{returnDate}, #{status})
+    </insert>
+
+    <select id="findBorrowDetails" parameterType="map"
+            resultType="com.mrozm.schoollibrary.process.borrowdetails.model.entity.BorrowDetailsEntity">
+        SELECT student_id, book_isbn, borrow_date, return_date, status
+        FROM borrow
+        WHERE student_id = #{studentId}
+          AND book_isbn = #{isbn}
+    </select>
+
+    <select id="findFullBorrowDetails" parameterType="map"
+            resultType="com.mrozm.schoollibrary.process.borrowdetails.model.entity.BorrowDetailsFullEntity">
+        SELECT student.id         AS studentId,
+               student.firstname  AS studentFirstname,
+               student.lastname   AS studentLastName,
+               book.isbn          AS bookIsbn,
+               book.title         AS bookTitle,
+               book.author        AS bookAuthor,
+               book.category      AS bookCategory,
+               book.format        AS bookFormat,
+               book.release       AS bookRelease,
+               borrow.borrow_date AS borrowDate,
+               borrow.return_date AS returnDate,
+               borrow.status      AS borrowStatus
+        FROM borrow
+                 INNER JOIN
+             student ON borrow.student_id = student.id
+                 INNER JOIN
+             book ON borrow.book_isbn = book.isbn
+        WHERE borrow.book_isbn = #{isbn}
+          AND borrow.student_id = #{studentId}
+          AND borrow.status != 'RETURNED'
+    </select>
+
+    <update id="returnBook" parameterType="map">
+        UPDATE borrow
+        SET return_date = CURRENT_DATE,
+            status      = 'RETURNED'
+        WHERE student_id = #{studentId}
+          AND book_isbn = #{isbn}
+    </update>
+
+</mapper>

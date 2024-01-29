@@ -3,6 +3,7 @@ package com.mrozm.schoollibrary.process.book
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mrozm.schoollibrary.process.book.model.dto.Book
 import com.mrozm.schoollibrary.process.book.model.dto.Category.ART
+import com.mrozm.schoollibrary.process.book.model.dto.Category.MOTIVATIONAL
 import com.mrozm.schoollibrary.process.book.model.dto.Format.PAPERBACK
 import com.mrozm.schoollibrary.utils.createObjectMapper
 import org.junit.jupiter.api.DisplayName
@@ -211,12 +212,12 @@ class BookControllerTest {
                 .andDo { print() }
                 .andExpect {
                     status { isOk() }
-                    jsonPath("$[0].isbn") { value("978-3-16-148410-0") }
+                    jsonPath("$[0].isbn") { value("000-0-00-000000-1") }
                     jsonPath("$[0].title") { value("title-test") }
                     jsonPath("$[0].author") { value("author-test") }
-                    jsonPath("$[0].category") { value(ART.name) }
+                    jsonPath("$[0].category") { value(MOTIVATIONAL.name) }
                     jsonPath("$[0].format") { value(PAPERBACK.name) }
-                    jsonPath("$[0].release") { value("2024-01-24") }
+                    jsonPath("$[0].release") { value("2016-06-23") }
                 }
         }
 

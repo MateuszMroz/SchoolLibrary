@@ -2,6 +2,7 @@ package com.mrozm.schoollibrary.process.book
 
 import com.mrozm.schoollibrary.process.book.model.entity.BookEntity
 import com.mrozm.schoollibrary.process.book.model.entity.CategoryEntity.ART
+import com.mrozm.schoollibrary.process.book.model.entity.CategoryEntity.MOTIVATIONAL
 import com.mrozm.schoollibrary.process.book.model.entity.FormatEntity.PAPERBACK
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.Test
@@ -16,6 +17,15 @@ import java.time.LocalDate
 class BookRepositoryTest @Autowired constructor(
     private val bookRepository: BookRepository
 ) {
+
+    private val bookEntity0 = BookEntity(
+        isbn = "000-0-00-000000-1",
+        title = "title-test",
+        author = "author-test",
+        category = MOTIVATIONAL,
+        format = PAPERBACK,
+        release = LocalDate.of(2016, 6, 23)
+    )
 
     private val bookEntity1 = BookEntity(
         isbn = "978-3-16-148410-0",
@@ -72,8 +82,8 @@ class BookRepositoryTest @Autowired constructor(
 
         // then
         assertThat(books).isNotEmpty
-        assertThat(books.size).isEqualTo(2)
-        assertThat(books).containsExactly(bookEntity1, bookEntity2)
+        assertThat(books.size).isEqualTo(3)
+        assertThat(books).containsExactly(bookEntity0, bookEntity1, bookEntity2)
     }
 
     @Test
