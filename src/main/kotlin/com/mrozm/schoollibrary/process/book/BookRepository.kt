@@ -5,8 +5,10 @@ import org.apache.ibatis.annotations.Mapper
 
 @Mapper
 interface BookRepository {
+
     fun save(bookEntity: BookEntity): Int
     fun findByIsbn(isbn: String): BookEntity?
+    fun findByIsbnSkipBorrowed(isbn: String): BookEntity?
     fun findAll(): List<BookEntity>
     fun update(isbn: String, book: BookEntity)
     fun delete(isbn: String)

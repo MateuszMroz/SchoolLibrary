@@ -4,6 +4,8 @@ import com.mrozm.schoollibrary.process.book.model.entity.BookEntity
 import com.mrozm.schoollibrary.process.book.model.entity.CategoryEntity.ART
 import com.mrozm.schoollibrary.process.book.model.entity.CategoryEntity.MOTIVATIONAL
 import com.mrozm.schoollibrary.process.book.model.entity.FormatEntity.PAPERBACK
+import com.mrozm.schoollibrary.process.borrowdetails.BorrowDetailsRepository
+import com.mrozm.schoollibrary.process.borrowdetails.model.entity.BorrowDetailsEntity
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.Test
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest
@@ -15,7 +17,8 @@ import java.time.LocalDate
 @MybatisTest
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 class BookRepositoryTest @Autowired constructor(
-    private val bookRepository: BookRepository
+    private val bookRepository: BookRepository,
+    private val borrowDetailsRepository: BorrowDetailsRepository
 ) {
 
     private val bookEntity0 = BookEntity(
@@ -69,6 +72,54 @@ class BookRepositoryTest @Autowired constructor(
         assertThat(book?.category).isEqualTo(ART)
         assertThat(book?.format).isEqualTo(PAPERBACK)
         assertThat(book?.release).isEqualTo(LocalDate.of(2024, 1, 24))
+    }
+
+    @Test
+    fun `should return no book when try to find it by isbn and check borrowed books`() {
+        // given
+        borrowDetailsRepository.borrowBook(BorrowDetailsEntity(studentId = 1L, bookIsbn = "000-0-00-000000-1"))
+
+        // when
+        val book = bookRepository.findByIsbnSkipBorrowed(isbn = "000-0-00-000000-1")
+
+        // then
+        assertThat(book).isNull()
+    }
+
+    @Test
+    fun `should return book when try to find it by isbn and check borrowed books`() {
+        // given
+        bookRepository.save(bookEntity1)
+        borrowDetailsRepository.borrowBook(BorrowDetailsEntity(studentId = 1L, bookIsbn = "000-0-00-000000-1"))
+
+        // when
+        val book = bookRepository.findByIsbnSkipBorrowed(isbn = "978-3-16-148410-0")
+
+        // then
+        assertThat(book?.isbn).isEqualTo("978-3-16-148410-0")
+        assertThat(book?.title).isEqualTo("title-test")
+        assertThat(book?.author).isEqualTo("author-test")
+        assertThat(book?.category).isEqualTo(ART)
+        assertThat(book?.format).isEqualTo(PAPERBACK)
+        assertThat(book?.release).isEqualTo(LocalDate.of(2024, 1, 24))
+    }
+
+    @Test
+    fun `should return one book when try it by isbn and book was borrow but now it has status RETURNED`() {
+        // given
+        borrowDetailsRepository.borrowBook(BorrowDetailsEntity(studentId = 1L, bookIsbn = "000-0-00-000000-1"))
+        borrowDetailsRepository.returnBook(studentId = 1L, isbn = "000-0-00-000000-1")
+
+        // when
+        val book = bookRepository.findByIsbnSkipBorrowed(isbn = "000-0-00-000000-1")
+
+        // then
+        assertThat(book?.isbn).isEqualTo("000-0-00-000000-1")
+        assertThat(book?.title).isEqualTo("title-test")
+        assertThat(book?.author).isEqualTo("author-test")
+        assertThat(book?.category).isEqualTo(MOTIVATIONAL)
+        assertThat(book?.format).isEqualTo(PAPERBACK)
+        assertThat(book?.release).isEqualTo(LocalDate.of(2016, 6, 23))
     }
 
     @Test

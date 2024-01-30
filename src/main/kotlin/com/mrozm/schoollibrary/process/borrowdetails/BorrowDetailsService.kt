@@ -34,8 +34,7 @@ class BorrowDetailsService(
     override fun borrowBook(isbn: String): Int {
         val username = SecurityContextHolder.getContext().authentication.name ?: throw UserNotFoundException
         val student = authService.findByEmail(username) ?: throw UserNotFoundException
-        val book = bookRepository.findByIsbn(isbn)
-            ?: throw BookNotFoundException // TODO(Search also a table of borrow books)
+        val book = bookRepository.findByIsbnSkipBorrowed(isbn) ?: throw BookNotFoundException
 
         return borrowDetailsRepository.borrowBook(
             BorrowDetailsEntity(

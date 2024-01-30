@@ -25,6 +25,15 @@
         WHERE isbn = #{isbn}
     </select>
 
+    <select id="findByIsbnSkipBorrowed" parameterType="string"
+            resultType="com.mrozm.schoollibrary.process.book.model.entity.BookEntity">
+        SELECT isbn, title, author, category, format, release
+        FROM book
+                 LEFT JOIN borrow ON book.isbn = borrow.book_isbn
+        WHERE isbn = #{isbn}
+          AND (borrow.status IS NULL OR borrow.status = 'RETURNED')
+    </select>
+
     <select id="findAll" resultMap="books">
         SELECT isbn, title, author, category, format, release
         FROM book
