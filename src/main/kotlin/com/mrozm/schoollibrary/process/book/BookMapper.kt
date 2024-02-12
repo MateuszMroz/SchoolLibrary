@@ -1,14 +1,14 @@
 package com.mrozm.schoollibrary.process.book
 
 import com.mrozm.schoollibrary.core.IMapper
-import com.mrozm.schoollibrary.process.book.model.dto.Book
+import com.mrozm.schoollibrary.process.book.model.dto.BookResponse
 import com.mrozm.schoollibrary.process.book.model.entity.BookEntity
 import org.springframework.stereotype.Component
 
 @Component
-class BookMapper : IMapper<Book, BookEntity> {
+class BookMapper : IMapper<BookResponse, BookEntity> {
 
-    override fun mapTo(a: Book): BookEntity = BookEntity(
+    override fun mapTo(a: BookResponse): BookEntity = BookEntity(
         isbn = a.isbn,
         title = a.title,
         author = a.author,
@@ -17,7 +17,7 @@ class BookMapper : IMapper<Book, BookEntity> {
         release = a.release
     )
 
-    override fun mapFrom(b: BookEntity): Book = Book(
+    override fun mapFrom(b: BookEntity): BookResponse = BookResponse(
         isbn = b.isbn,
         title = b.title,
         author = b.author,

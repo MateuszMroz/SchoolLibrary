@@ -4,7 +4,7 @@ import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.format.annotation.DateTimeFormat.ISO.DATE
 import java.time.LocalDate
 
-data class Book(
+data class BookResponse(
     val isbn: String,
     val title: String,
     val author: String,

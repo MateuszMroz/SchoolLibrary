@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+        'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+
+<mapper namespace="com.mrozm.schoollibrary.process.bookreservation.BookReservationRepository">
+
+    <resultMap id="bookReservationDetailsResultMap"
+               type="com.mrozm.schoollibrary.process.bookreservation.model.entity.BookReservationDetailsEntity"
+               autoMapping="true">
+        <result column="borrow_date" property="borrowDate"/>
+        <result column="return_date" property="returnDate"/>
+        <result column="status" property="borrowStatus"/>
+        <association property="student"
+                     resultMap="studentResultMap"
+                     columnPrefix="s_"
+        />
+        <association property="book"
+                     resultMap="bookResultMap"
+                     columnPrefix="b_"
+        />
+    </resultMap>
+
+    <resultMap id="bookResultMap"
+               type="com.mrozm.schoollibrary.process.book.model.entity.BookEntity"
+               autoMapping="true"/>
+
+    <resultMap id="studentResultMap"
+               type="com.mrozm.schoollibrary.process.bookreservation.model.entity.StudentEntity"
+               autoMapping="true"/>
+
+
+    <select id="selectBookReservation"
+            resultType="com.mrozm.schoollibrary.process.bookreservation.model.entity.BookReservationEntity">
+        SELECT student_uuid AS studentUuid,
+               book_isbn    AS bookIsbn,
+               borrow_date  AS borrowDate,
+               return_date  AS returnDate,
+               status       AS borrowStatus
+        FROM book_reservation
+        WHERE student_uuid = #{uuid}
+          AND book_isbn = #{isbn}
+    </select>
+
+    <select id="selectDetailsBookReservation" resultMap="bookReservationDetailsResultMap">
+        SELECT book_reservation.borrow_date,
+               book_reservation.return_date,
+               book_reservation.status,
+               student.uuid      AS s_uuid,
+               student.firstname AS s_firstname,
+               student.lastname  AS s_lastname,
+               book.isbn         AS b_isbn,
+               book.title        AS b_title,
+               book.author       AS b_author,
+               book.category     AS b_category,
+               book.format       AS b_format,
+               book.release      AS b_release
+        FROM book_reservation
+                 INNER JOIN
+             student ON book_reservation.student_uuid = student.uuid
+                 INNER JOIN
+             book ON book_reservation.book_isbn = book.isbn
+        WHERE book_reservation.book_isbn = #{isbn}
+          AND book_reservation.student_uuid = #{uuid}
+          AND book_reservation.status != 'RETURNED'
+    </select>
+
+    <insert id="insert">
+        INSERT INTO book_reservation (student_uuid, book_isbn, borrow_date, return_date, status)
+        VALUES (#{studentUuid}, #{bookIsbn}, #{borrowDate}, #{returnDate}, #{borrowStatus})
+    </insert>
+
+    <update id="update" parameterType="map">
+        UPDATE book_reservation
+        SET return_date = CURRENT_DATE,
+            status      = 'RETURNED'
+        WHERE student_uuid = #{uuid}
+          AND book_isbn = #{isbn}
+    </update>
+
+</mapper>

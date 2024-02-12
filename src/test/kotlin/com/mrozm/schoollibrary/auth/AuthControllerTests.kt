@@ -9,26 +9,26 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_METHOD
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mybatis.spring.boot.test.autoconfigure.AutoConfigureMybatis
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
-@ExtendWith(SpringExtension::class)
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-@AutoConfigureMybatis
-class AuthControllerTests @Autowired constructor(
-    private val mockMvc: MockMvc,
-    private val service: IAuthService
-) {
+@ExtendWith(SpringExtension::class)
+@Transactional
+class AuthControllerTests {
+
+    @Autowired
+    lateinit var mockMvc: MockMvc
+
+    @Autowired
+    lateinit var service: IAuthService
 
     private val objectMapper: ObjectMapper = ObjectMapper()
 
@@ -48,6 +48,7 @@ class AuthControllerTests @Autowired constructor(
     @DisplayName("Register")
     @TestInstance(PER_METHOD)
     inner class Register {
+
         @Test
         fun `should return OK when user register successfully`() {
             // given/when
@@ -102,14 +103,12 @@ class AuthControllerTests @Autowired constructor(
                     status { isBadRequest() }
                 }
         }
-
     }
 
     @Nested
     @DisplayName("Login")
     @TestInstance(PER_METHOD)
     inner class Login {
-
 
         @Test
         fun `should return OK when user log in successfully`() {
@@ -175,5 +174,4 @@ class AuthControllerTests @Autowired constructor(
     private companion object {
         const val BASE_URL = "/api/v1/auth"
     }
-
 }

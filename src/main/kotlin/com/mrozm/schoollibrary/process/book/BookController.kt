@@ -1,6 +1,6 @@
 package com.mrozm.schoollibrary.process.book
 
-import com.mrozm.schoollibrary.process.book.model.dto.Book
+import com.mrozm.schoollibrary.process.book.model.dto.BookResponse
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.http.HttpStatus.*
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -20,87 +18,91 @@ class BookController(
     private val service: IBookService
 ) {
 
-    @ExceptionHandler(NoSuchElementException::class)
-    fun handleBadRequest(e: NoSuchElementException): ResponseEntity<String> =
-        ResponseEntity(e.message, NOT_FOUND)
-
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "201", description = "Save book", content = [
-                    (Content(mediaType = "application/json", schema = Schema(implementation = Book::class)))]
+                responseCode = "201",
+                description = "Save book",
+                content = [
+                    (Content(mediaType = "application/json", schema = Schema(implementation = BookResponse::class)))]
             ),
-            ApiResponse(responseCode = "400", description = "Problem with save", content = [Content()])]
+            ApiResponse(
+                responseCode = "400",
+                description = "Problem with save",
+                content = [Content()]
+            )]
     )
     @PostMapping
-    fun save(@RequestBody book: Book): ResponseEntity<Book> {
-        return service.save(book).let {
-            when {
-                it >= 1 -> ResponseEntity(book, CREATED)
-                else -> ResponseEntity(BAD_REQUEST)
-            }
-        }
+    fun save(@RequestBody book: BookResponse) {
+        service.save(book)
     }
 
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "201", description = "Update book", content = [
-                    (Content(mediaType = "application/json", schema = Schema(implementation = Book::class)))]
+                responseCode = "201",
+                description = "Update book",
+                content = [
+                    (Content(mediaType = "application/json", schema = Schema(implementation = BookResponse::class)))]
             ),
             ApiResponse(
-                responseCode = "400",
+                responseCode = "404",
                 description = "Problem with update book because of isbn wrong number",
                 content = [Content()]
             )]
     )
     @PutMapping("/{isbn}")
-    fun update(@PathVariable("isbn") isbn: String, @RequestBody book: Book): ResponseEntity<Book> {
-        if (isbn != book.isbn)
-            return ResponseEntity(BAD_REQUEST)
-
-        service.update(book)
-
-        return ResponseEntity(OK)
+    fun update(@PathVariable("isbn") isbn: String, @RequestBody book: BookResponse) {
+        service.update(isbn, book)
     }
 
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Find book by isbn", content = [
-                    (Content(mediaType = "application/json", schema = Schema(implementation = Book::class)))]
+                responseCode = "200",
+                description = "Find book by isbn",
+                content = [(Content(
+                    mediaType = "application/json",
+                    schema = Schema(implementation = BookResponse::class)
+                ))],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Book not found",
+                content = [Content()]
             )]
     )
     @GetMapping("/{isbn}")
-    fun findByIsbn(@PathVariable("isbn") isbn: String): ResponseEntity<Book> {
-        return ResponseEntity(service.findByIsbn(isbn), OK)
+    fun findByIsbn(@PathVariable("isbn") isbn: String): BookResponse {
+        return service.findByIsbn(isbn)
     }
 
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200", description = "Find all books", content = [
-                    (Content(
-                        mediaType = "application/json", array = (
-                                ArraySchema(schema = Schema(implementation = Book::class)))
-                    ))]
+                responseCode = "200",
+                description = "Find all books",
+                content = [(Content(
+                    mediaType = "application/json",
+                    array = (ArraySchema(schema = Schema(implementation = BookResponse::class)))
+                ))]
             )]
     )
     @GetMapping
-    fun findAll(): ResponseEntity<List<Book>> {
-        return ResponseEntity(service.findAll(), OK)
+    fun findAll(): List<BookResponse> {
+        return service.findAll()
     }
 
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "204", description = "Delete book by isbn", content = [
-                    (Content(mediaType = "application/json"))]
+                responseCode = "204",
+                description = "Delete book by isbn",
+                content = [(Content(mediaType = "application/json"))]
             )]
     )
     @DeleteMapping("/{isbn}")
-    fun delete(@PathVariable("isbn") isbn: String): ResponseEntity<Book> {
+    fun delete(@PathVariable("isbn") isbn: String) {
         service.delete(isbn)
-        return ResponseEntity(NO_CONTENT)
     }
 }

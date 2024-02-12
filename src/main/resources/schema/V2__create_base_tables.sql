@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS student
+CREATE TABLE student
 (
     id        SERIAL PRIMARY KEY,
     firstname VARCHAR(100) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS student
     role      VARCHAR(30)  NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS book
+CREATE TABLE book
 (
     isbn     VARCHAR(100) NOT NULL PRIMARY KEY,
     title    VARCHAR(150) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS book
     release  DATE         NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS borrow
+CREATE TABLE borrow
 (
     id          SERIAL PRIMARY KEY,
     student_id  INTEGER      NOT NULL,

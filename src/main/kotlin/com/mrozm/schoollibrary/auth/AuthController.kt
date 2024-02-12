@@ -8,9 +8,10 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.http.HttpStatus.BAD_REQUEST
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -18,10 +19,6 @@ import org.springframework.web.bind.annotation.*
 class AuthController(
     private val service: IAuthService
 ) {
-
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun handleBadRequest(e: IllegalArgumentException): ResponseEntity<String> =
-        ResponseEntity(e.message, BAD_REQUEST)
 
     @ApiResponses(
         value = [
@@ -32,8 +29,8 @@ class AuthController(
             ApiResponse(responseCode = "400", description = "No valid data", content = [Content()])]
     )
     @PostMapping("/register")
-    fun register(@RequestBody request: RegisterRequest): ResponseEntity<AccessResponse> {
-        return ResponseEntity.ok(service.register(request))
+    fun register(@RequestBody request: RegisterRequest): AccessResponse {
+        return service.register(request)
     }
 
     @ApiResponses(
@@ -45,7 +42,7 @@ class AuthController(
             ApiResponse(responseCode = "400", description = "No valid data", content = [Content()])]
     )
     @PostMapping("/login")
-    fun login(@RequestBody request: LoginRequest): ResponseEntity<AccessResponse> {
-        return ResponseEntity.ok(service.login(request))
+    fun login(@RequestBody request: LoginRequest): AccessResponse {
+        return service.login(request)
     }
 }

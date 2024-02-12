@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+<configuration>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%5level [%thread] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root name="Logger" level="DEBUG">
+        <appender-ref ref="${logging.appender:-console}"/>
+    </root>
+
+</configuration>

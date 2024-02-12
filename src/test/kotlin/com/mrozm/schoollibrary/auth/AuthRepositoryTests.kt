@@ -1,42 +1,27 @@
 package com.mrozm.schoollibrary.auth
 
 import com.mrozm.schoollibrary.auth.model.entity.Role.USER
-import com.mrozm.schoollibrary.auth.model.entity.Student
+import com.mrozm.schoollibrary.auth.model.entity.StudentEntity
+import com.mrozm.schoollibrary.utils.TestDataGenerator.Companion.STUDENT_UUID
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.Test
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE
 
 @MybatisTest
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-class AuthRepositoryTests @Autowired constructor(
-    private val authRepository: AuthRepository
-) {
+@AutoConfigureTestDatabase(replace = NONE)
+class AuthRepositoryTests {
 
-    @Test
-    fun `should return rows affected when save student to database`() {
-        // given
-        val student = Student(
-            firstname = "Anne",
-            lastname = "Cleveland",
-            email = "jewel.martin@example.com",
-            pass = "partiendo",
-            role = USER
-        )
-
-        // when
-        val rowsAffected = authRepository.save(student)
-
-        // then
-        assertThat(rowsAffected).isGreaterThan(0)
-    }
+    @Autowired
+    lateinit var authRepository: AuthRepository
 
     @Test
     fun `should find student when save to database`() {
         // given
-        val student = Student(
+        val student = StudentEntity(
+            uuid = STUDENT_UUID,
             firstname = "Anne",
             lastname = "Cleveland",
             email = "jewel.martin@example.com",
@@ -50,7 +35,7 @@ class AuthRepositoryTests @Autowired constructor(
 
         // then
         assertThat(result).isNotNull
-        assertThat(result?.id).isNotZero()
+        assertThat(result?.uuid).isEqualTo(STUDENT_UUID)
         assertThat(result?.firstname).isEqualTo("Anne")
         assertThat(result?.lastname).isEqualTo("Cleveland")
         assertThat(result?.email).isEqualTo("jewel.martin@example.com")

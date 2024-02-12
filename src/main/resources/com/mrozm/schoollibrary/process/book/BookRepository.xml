@@ -4,18 +4,10 @@
 
 <mapper namespace="com.mrozm.schoollibrary.process.book.BookRepository">
 
-    <resultMap id="books" type="com.mrozm.schoollibrary.process.book.model.entity.BookEntity">
-        <result column="isbn"/>
-        <result column="title"/>
-        <result column="author"/>
-        <result column="category"/>
-        <result column="format"/>
-        <result column="release"/>
-    </resultMap>
-
     <insert id="save">
         INSERT INTO book (isbn, title, author, category, format, release)
         VALUES (#{isbn}, #{title}, #{author}, #{category}, #{format}, #{release})
+        ON CONFLICT (isbn) DO NOTHING
     </insert>
 
     <select id="findByIsbn" parameterType="string"
@@ -25,21 +17,12 @@
         WHERE isbn = #{isbn}
     </select>
 
-    <select id="findByIsbnSkipBorrowed" parameterType="string"
-            resultType="com.mrozm.schoollibrary.process.book.model.entity.BookEntity">
-        SELECT isbn, title, author, category, format, release
-        FROM book
-                 LEFT JOIN borrow ON book.isbn = borrow.book_isbn
-        WHERE isbn = #{isbn}
-          AND (borrow.status IS NULL OR borrow.status = 'RETURNED')
-    </select>
-
-    <select id="findAll" resultMap="books">
+    <select id="findAll" resultType="com.mrozm.schoollibrary.process.book.model.entity.BookEntity">
         SELECT isbn, title, author, category, format, release
         FROM book
     </select>
 
-    <update id="update" parameterType="map">
+    <update id="update">
         UPDATE book
         SET title    = #{book.title},
             author   = #{book.author},

@@ -4,14 +4,15 @@
 
 <mapper namespace="com.mrozm.schoollibrary.auth.AuthRepository">
 
-    <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO student (firstname, lastname, email, pass, role)
-        VALUES (#{firstname}, #{lastname}, #{email}, #{pass}, #{role})
+    <insert id="save">
+        INSERT INTO student (uuid, firstname, lastname, email, pass, role)
+        VALUES (#{uuid}, #{firstname}, #{lastname}, #{email}, #{pass}, #{role})
+        ON CONFLICT (email) DO NOTHING
     </insert>
 
     <select id="findByEmail" parameterType="string"
-            resultType="com.mrozm.schoollibrary.auth.model.entity.Student">
-        SELECT id, firstname, lastname, email, pass, role
+            resultType="com.mrozm.schoollibrary.auth.model.entity.StudentEntity">
+        SELECT uuid, firstname, lastname, email, pass, role
         FROM student
         WHERE email = #{email}
     </select>

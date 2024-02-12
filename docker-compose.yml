@@ -9,3 +9,16 @@ services:
     restart: always
     environment:
       POSTGRES_PASSWORD: changemeinprod!
+
+  db-test:
+    image: postgres
+    ports:
+      - "45433:5432"
+    expose:
+      - "45433"
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    networks:
+      - default
