@@ -7,9 +7,6 @@
     <resultMap id="bookReservationDetailsResultMap"
                type="com.mrozm.schoollibrary.process.bookreservation.model.entity.BookReservationDetailsEntity"
                autoMapping="true">
-        <result column="borrow_date" property="borrowDate"/>
-        <result column="return_date" property="returnDate"/>
-        <result column="status" property="borrowStatus"/>
         <association property="student"
                      resultMap="studentResultMap"
                      columnPrefix="s_"
@@ -44,16 +41,16 @@
     <select id="selectDetailsBookReservation" resultMap="bookReservationDetailsResultMap">
         SELECT book_reservation.borrow_date,
                book_reservation.return_date,
-               book_reservation.status,
-               student.uuid      AS s_uuid,
-               student.firstname AS s_firstname,
-               student.lastname  AS s_lastname,
-               book.isbn         AS b_isbn,
-               book.title        AS b_title,
-               book.author       AS b_author,
-               book.category     AS b_category,
-               book.format       AS b_format,
-               book.release      AS b_release
+               book_reservation.status AS borrowStatus,
+               student.uuid            AS s_uuid,
+               student.firstname       AS s_firstname,
+               student.lastname        AS s_lastname,
+               book.isbn               AS b_isbn,
+               book.title              AS b_title,
+               book.author             AS b_author,
+               book.category           AS b_category,
+               book.format             AS b_format,
+               book.release            AS b_release
         FROM book_reservation
                  INNER JOIN
              student ON book_reservation.student_uuid = student.uuid
